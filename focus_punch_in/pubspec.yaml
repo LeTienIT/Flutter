@@ -1,0 +1,35 @@
+name: focus_punch_in
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  sqflite: ^2.3.0     # driver SQLite
+  path_provider: ^2.0.14   # lấy thư mục lưu file
+  path: ^1.9.0
+  provider: ^6.1.0
+  intl: ^0.19.0
+  flutter_local_notifications: ^19.1.0
+  timezone: ^0.10.1
+  flutter_timezone: ^4.1.0
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+
+  uses-material-design: true
+
