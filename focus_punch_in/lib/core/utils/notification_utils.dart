@@ -162,16 +162,16 @@ class NotificationUtil {
       // final prefs = SharedPrefService.instance;
       final isRegister = SharedPrefService.instance.getValue<bool>('isRegister_notification') ?? false;
 
-      if (!isRegister) {
+      // if (!isRegister) {
         await showNotificationDaily(111, "Check in", "Bạn đã chấm công sáng chưa?", 08, 25);
-        await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", 17, 35);
+        await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", 17, 35s);
         SharedPrefService.instance.setValue<bool>('isRegister_notification', true);
         SharedPrefService.instance.setValue<int>('h_in', 08);
         SharedPrefService.instance.setValue<int>('m_i', 25);
         SharedPrefService.instance.setValue<int>('h_o', 17);
         SharedPrefService.instance.setValue<int>('m_o', 35);
         // print("Đã đăng ký thông báo hàng ngày");
-      }
+      // }
     } catch (e) {
       print('Error registering notifications: $e');
     }

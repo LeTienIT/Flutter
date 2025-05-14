@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPrefService.instance.init();
-  // print("Thời gian hiện tại trên máy ảo: ${DateTime.now()}");
+  print("Thời gian hiện tại trên máy ảo: ${DateTime.now()}");
   tz.initializeTimeZones();
   final location = tz.getLocation('Asia/Ho_Chi_Minh');
   tz.setLocalLocation(location);

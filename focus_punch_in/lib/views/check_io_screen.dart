@@ -98,12 +98,12 @@ class CheckIOScreen extends StatelessWidget{
                 ],
               ),
 
-            // ElevatedButton(
-            //   onPressed: ()=>{
-            //     SharedPrefService.instance.printAllPrefs()
-            //   },
-            //   child: Text("test")
-            // )
+            ElevatedButton(
+              onPressed: ()=>{
+                NotificationUtil().showNotification(title:'test',body:"Thông báo test")
+              },
+              child: Text("test")
+            )
           ],
         )
       ),
