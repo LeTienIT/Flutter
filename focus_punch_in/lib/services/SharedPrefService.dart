@@ -30,6 +30,7 @@ class SharedPrefService{
   T? getValue<T>(String key){
     if(T == String) return _preferences.getString(key) as T?;
     if(T == bool) return _preferences.getBool(key) as T?;
+    if(T == int) return _preferences.getInt(key) as T?;
     throw Exception("Không tìm thấy kiểu tướng ứng GET (String / bool)");
   }
 
@@ -40,6 +41,10 @@ class SharedPrefService{
     }
     else if(value is bool) {
       _preferences.setBool(key, value as bool);
+      // print("set $key - $value");
+    }
+    else if(value is int) {
+      _preferences.setInt(key, value as int);
       // print("set $key - $value");
     }
     else{

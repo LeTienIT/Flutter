@@ -166,8 +166,25 @@ class NotificationUtil {
         await showNotificationDaily(111, "Check in", "Bạn đã chấm công sáng chưa?", 08, 25);
         await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", 17, 35);
         SharedPrefService.instance.setValue<bool>('isRegister_notification', true);
+        SharedPrefService.instance.setValue<int>('h_in', 08);
+        SharedPrefService.instance.setValue<int>('m_i', 25);
+        SharedPrefService.instance.setValue<int>('h_o', 17);
+        SharedPrefService.instance.setValue<int>('m_o', 35);
         // print("Đã đăng ký thông báo hàng ngày");
       }
+    } catch (e) {
+      print('Error registering notifications: $e');
+    }
+  }
+
+  Future<void> registerNotificationCustomize({required int h_in, required int m_in, required int h_o, required int m_o}) async {
+    try {
+      await showNotificationDaily(111, "Check in", "Bạn đã chấm công sáng chưa?", h_in, m_in);
+      await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", h_o, m_o);
+      SharedPrefService.instance.setValue<int>('h_in', h_in);
+      SharedPrefService.instance.setValue<int>('m_i', m_in);
+      SharedPrefService.instance.setValue<int>('h_o', h_o);
+      SharedPrefService.instance.setValue<int>('m_o', m_o);
     } catch (e) {
       print('Error registering notifications: $e');
     }

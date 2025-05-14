@@ -22,8 +22,6 @@ void main() async{
   await NotificationUtil().initNoti();
   await NotificationUtil().registerNotificationDefault();
 
-
-
   runApp(
       // ChangeNotifierProvider(
       //   create: (_) => TimeSheetVM()..loadData(),
@@ -48,9 +46,17 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         brightness: Brightness.light,
+        expansionTileTheme: ExpansionTileThemeData(
+          backgroundColor: Colors.grey[200],
+          collapsedBackgroundColor: Colors.grey[100]
+        )
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
+          expansionTileTheme: ExpansionTileThemeData(
+              backgroundColor: Colors.grey[900],
+              collapsedBackgroundColor: Colors.grey[850]
+          )
       ),
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routes: {
