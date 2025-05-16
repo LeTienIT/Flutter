@@ -23,7 +23,12 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
           actions: [
             IconButton(
                 onPressed: ()=>{Navigator.pushNamed(context, '/setting')},
-                icon: Icon(Icons.settings))
+                icon: Icon(Icons.settings)
+            ),
+            IconButton(
+                onPressed: ()=>{Navigator.pushNamed(context, '/report')},
+                icon: Icon(Icons.analytics_rounded)
+            )
           ],
       ),
       body: Column(

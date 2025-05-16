@@ -8,13 +8,18 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._();
   static Database? _db;
 
+  static const _databaseVersion = 2;
+
   Future<Database> get db async => _db ??= await _initDatabase();
 
   Future<Database> _initDatabase() async{
     final dir = await getApplicationDocumentsDirectory();
     final path = join(dir.path, "work_session.db");
     return openDatabase(
-      path, version: 1, onCreate: _onCreate,
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade
     );
   }
 
@@ -27,6 +32,22 @@ class DatabaseHelper {
         check_out  TEXT
       )
     ''');
+  }
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion)async {
+    if(oldVersion < newVersion){
+      await db.execute('''
+        ALTER TABLE sessions 
+        ADD COLUMN isCompleted INTEGER NOT NULL DEFAULT 0
+      ''');
+
+      await db.execute('''
+        UPDATE sessions 
+        SET isCompleted = CASE 
+          WHEN check_out IS NOT NULL THEN 1 
+          ELSE 0 
+        END
+      ''');
+    }
   }
 
   Future<int> insert(WorkSession w) async =>

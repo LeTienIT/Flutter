@@ -6,9 +6,9 @@ class WorkSession{
   DateTime day;
   final DateTime checkIn;
   DateTime? checkOut;
-  bool isCompleted;
+  int isCompleted;
 
-  WorkSession({this.id,required this.day, required this.checkIn, this.checkOut, this.isCompleted=false});
+  WorkSession({this.id,required this.day, required this.checkIn, this.checkOut, this.isCompleted=0});
 
   Duration get duration => (checkOut ?? DateTime.now()).difference(checkIn);
 
@@ -21,7 +21,7 @@ class WorkSession{
     day: DateTime.parse(m['day']),
     checkIn: DateTime.parse(m['check_in']),
     checkOut: (m['check_out'] as String).isEmpty ? null : DateTime.parse(m['check_out']),
-    isCompleted: m['isComplete'] as  bool
+    isCompleted: m['isCompleted'] as  int
   );
 
   Map<String, dynamic> toMap() => {

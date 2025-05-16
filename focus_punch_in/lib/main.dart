@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:focus_punch_in/core/utils/notification_utils.dart';
+import 'package:focus_punch_in/viewmodels/report_vm.dart';
 import 'package:focus_punch_in/viewmodels/theme_vm.dart';
 import 'package:focus_punch_in/viewmodels/time_sheet_vm.dart';
 import 'package:focus_punch_in/views/check_io_screen.dart';
 import 'package:focus_punch_in/views/list_view.dart';
+import 'package:focus_punch_in/views/report_screen.dart';
 import 'package:focus_punch_in/views/setting_screen.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
@@ -62,7 +64,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/list': (context) => TimeSheetScreen(),
         '/checkIn': (context) => CheckIOScreen(),
-        '/setting': (context) => SettingScreen()
+        '/setting': (context) => SettingScreen(),
+        '/report' : (context) => ReportScreen()
       },
       home: TimeSheetScreen(),
     );

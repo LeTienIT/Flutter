@@ -5,7 +5,7 @@ import '../services/database.dart';
 
 class TimeSheetVM extends ChangeNotifier{
   final _db = DatabaseHelper.instance;
-
+  bool isLoading = true;
   // STATE
   final List<WorkSession> _list = [];
   List<WorkSession> listView = [];
@@ -26,6 +26,7 @@ class TimeSheetVM extends ChangeNotifier{
     // print("Số lượng $data.length");
     _list..clear()..addAll(data.reversed);
     listView..clear()..addAll(_list);
+    isLoading = false;
     notifyListeners();
   }
 
