@@ -60,7 +60,7 @@ class _SettingScreen extends State<SettingScreen>{
             ],
           ),
           ExpansionTile(
-            title: Text('Hẹn giờ'),
+            title: Text('Đặt giờ nhắc nhở'),
             leading: Icon(Icons.access_alarm),
             children: [
               Padding(

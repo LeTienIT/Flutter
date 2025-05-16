@@ -159,12 +159,12 @@ class NotificationUtil {
 
   Future<void> registerNotificationDefault() async {
     try {
-      // final prefs = SharedPrefService.instance;
+      // final prefs = SharedPrefService.instance;s
       final isRegister = SharedPrefService.instance.getValue<bool>('isRegister_notification') ?? false;
 
       // if (!isRegister) {
         await showNotificationDaily(111, "Check in", "Bạn đã chấm công sáng chưa?", 08, 25);
-        await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", 17, 35s);
+        await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", 17, 35);
         SharedPrefService.instance.setValue<bool>('isRegister_notification', true);
         SharedPrefService.instance.setValue<int>('h_in', 08);
         SharedPrefService.instance.setValue<int>('m_i', 25);

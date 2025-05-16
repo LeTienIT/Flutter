@@ -84,6 +84,9 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                 itemCount: vm.list.length,
                 itemBuilder: (context, index) {
                   final item = vm.list[index];
+                  final bool isSpecialItem = item.getCheckOut == '--|--';
+                  final Color cardColor = isSpecialItem ? Theme.of(context).colorScheme.errorContainer:Theme.of(context).cardColor;
+                  final Color textColor = isSpecialItem ? Theme.of(context).colorScheme.onErrorContainer:Theme.of(context).colorScheme.onSurface;
                   return Dismissible(
                     key: Key(item.id!.toString()),
                     direction: DismissDirection.endToStart,
@@ -97,7 +100,8 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                       vm.delete(item.id!);
                     },
                     child: Card(
-                      // color: Colors.grey[900],
+                      color: item.getCheckOut ==  '--|--' ?
+                        Theme.of(context).colorScheme.secondary : null,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -110,21 +114,27 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                             Expanded(
                               child: Text(
                                 item.getDay,
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 16,
+                                    color: item.getCheckOut ==  '--|--' ?
+                                    Theme.of(context).colorScheme.errorContainer : null),
                                 textAlign: TextAlign.center,
                               ),
                             ),
                             Expanded(
                               child: Text(
                                 item.getCheckIn,
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 16,
+                                    color: item.getCheckOut ==  '--|--' ?
+                                    Theme.of(context).colorScheme.errorContainer : null),
                                 textAlign: TextAlign.center,
                               ),
                             ),
                             Expanded(
                               child: Text(
                                 item.getCheckOut,
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 16,
+                                    color: item.getCheckOut ==  '--|--' ?
+                                    Theme.of(context).colorScheme.errorContainer : null),
                                 textAlign: TextAlign.center,
                               ),
                             ),

@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         expansionTileTheme: ExpansionTileThemeData(
           backgroundColor: Colors.grey[200],
           collapsedBackgroundColor: Colors.grey[100]
-        )
+        ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
