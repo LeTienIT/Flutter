@@ -92,62 +92,68 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                   final bool isSpecialItem = item.getCheckOut == '--|--';
                   final Color cardColor = isSpecialItem ? Theme.of(context).colorScheme.errorContainer:Theme.of(context).cardColor;
                   final Color textColor = isSpecialItem ? Theme.of(context).colorScheme.onErrorContainer:Theme.of(context).colorScheme.onSurface;
-                  return Dismissible(
-                    key: Key(item.id!.toString()),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Icon(Icons.delete),
-                    ),
-                    onDismissed: (direction) {
-                      vm.delete(item.id!);
+                  return InkWell(
+                    onTap: (){
+                      _showDialog(context, item, vm);
                     },
-                    child: Card(
-                      color: item.getCheckOut ==  '--|--' ?
-                        Theme.of(context).colorScheme.secondary : null,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    child: Dismissible(
+                      key: Key(item.id!.toString()),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Icon(Icons.delete),
                       ),
-                      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                item.getDay,
-                                style: TextStyle(fontSize: 16,
-                                    color: item.getCheckOut ==  '--|--' ?
-                                    Theme.of(context).colorScheme.errorContainer : null),
-                                textAlign: TextAlign.center,
+                      onDismissed: (direction) {
+                        vm.delete(item.id!);
+                      },
+                      child: Card(
+                        color: item.getCheckOut ==  '--|--' ?
+                        Theme.of(context).colorScheme.secondary : null,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.getDay,
+                                  style: TextStyle(fontSize: 16,
+                                      color: item.getCheckOut ==  '--|--' ?
+                                      Theme.of(context).colorScheme.errorContainer : null),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                item.getCheckIn,
-                                style: TextStyle(fontSize: 16,
-                                    color: item.getCheckOut ==  '--|--' ?
-                                    Theme.of(context).colorScheme.errorContainer : null),
-                                textAlign: TextAlign.center,
+                              Expanded(
+                                child: Text(
+                                  item.getCheckIn,
+                                  style: TextStyle(fontSize: 16,
+                                      color: item.getCheckOut ==  '--|--' ?
+                                      Theme.of(context).colorScheme.errorContainer : null),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                item.getCheckOut,
-                                style: TextStyle(fontSize: 16,
-                                    color: item.getCheckOut ==  '--|--' ?
-                                    Theme.of(context).colorScheme.errorContainer : null),
-                                textAlign: TextAlign.center,
+                              Expanded(
+                                child: Text(
+                                  item.getCheckOut,
+                                  style: TextStyle(fontSize: 16,
+                                      color: item.getCheckOut ==  '--|--' ?
+                                      Theme.of(context).colorScheme.errorContainer : null),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                    )
                   );
+                  // return
                 },
             ),
           ),
@@ -185,69 +191,74 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
 
   void _showDialog(BuildContext context, WorkSession w, TimeSheetVM vm){
     var timeCheckIn = parseTimeFromString(w.getCheckIn);
-    var timeCheckOut = parseTimeFromString(w.getCheckOut);
+    var timeCheckOut = TimeOfDay.now();
+    if(w.getCheckOut!='--|--')timeCheckOut = parseTimeFromString(w.getCheckOut);
     var wID = w.id;
     var day = w.day;
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Ngày: ${w.getDay}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
+        builder: (context){
+          return StatefulBuilder(builder: (context, setState){
+            return AlertDialog(
+              title: Text('Ngày: ${w.getDay}'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(child: Text('Giờ check-in')),
-                  Text(timeCheckIn.format(context)),
-                  IconButton(
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(child: Text('Giờ check-in')),
+                      Text(timeCheckIn.format(context)),
+                      IconButton(
+                          onPressed: () async {
+                            var pickedTime = await showTimePicker(
+                                context: context,
+                                initialTime: timeCheckIn,
+                                initialEntryMode: TimePickerEntryMode.dial
+                            );
+                            if(pickedTime != null){
+                              setState(() {
+                                timeCheckIn = pickedTime;
+                              });
+                            }
+                          },
+                          icon: Icon(Icons.access_alarms))
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(child: Text('Giờ check-out')),
+                      Text(w.getCheckOut=='--|--' ? w.getCheckOut : timeCheckOut.format(context)),
+                      IconButton(
+                          onPressed: () async {
+                            var pickedTime = await showTimePicker(
+                                context: context,
+                                initialTime: timeCheckOut,
+                                initialEntryMode: TimePickerEntryMode.dial
+                            );
+                            if(pickedTime != null){
+                              setState(() {
+                                timeCheckOut = pickedTime;
+                              });
+                            }
+                          },
+                          icon: Icon(Icons.access_alarms))
+                    ],
+                  ),
+                  FilledButton(
                       onPressed: () async {
-                        var pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: timeCheckIn,
-                            initialEntryMode: TimePickerEntryMode.dial
-                        );
-                        if(pickedTime != null){
-                          setState(() {
-                            timeCheckIn = pickedTime;
-                          });
-                        }
+                        w.checkIn = DateTime(day.year,day.month,day.day,timeCheckIn.hour,timeCheckIn.minute);
+                        w.checkOut = DateTime(day.year,day.month,day.day,timeCheckOut.hour,timeCheckOut.minute);
+                        await vm.update(w, wID!);
                       },
-                      icon: Icon(Icons.access_alarms))
+                      child: Text('Cập nhật')
+                  )
                 ],
               ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(child: Text('Giờ check-out')),
-                  Text(timeCheckOut.format(context)),
-                  IconButton(
-                      onPressed: () async {
-                        var pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: timeCheckOut,
-                            initialEntryMode: TimePickerEntryMode.dial
-                        );
-                        if(pickedTime != null){
-                          setState(() {
-                            timeCheckOut = pickedTime;
-                          });
-                        }
-                      },
-                      icon: Icon(Icons.access_alarms))
-                ],
-              ),
-              FilledButton(
-                  onPressed: () async {
-                    w.checkIn = DateTime(day.year,day.month,day.day,timeCheckIn.hour,timeCheckIn.minute);
-                    w.checkOut = DateTime(day.year,day.month,day.day,timeCheckOut.hour,timeCheckOut.minute);
-                    await vm.update(w, wID!);
-                  },
-                  child: Text('Cập nhật')
-              )
-            ],
-          ),
-        ),
+            );
+          });
+        }
     );
   }
 
