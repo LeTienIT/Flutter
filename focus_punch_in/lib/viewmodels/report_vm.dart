@@ -9,10 +9,9 @@ class Report_vm extends ChangeNotifier{
   final List<WorkSession> sourceList;
 
   int totalWorkingDays = 0;
-  int checkedInDays = 0;
-  int missingCheckoutDays = 0;
-  int absentDays = 0;
   int remainingWorkingDays = 0;
+  int absentDays = 0;
+  int missingCheckoutDays = 0;
   double totalWorkPoints = 0;
 
   Report_vm(this.month, this.year, this.sourceList){
@@ -21,7 +20,6 @@ class Report_vm extends ChangeNotifier{
 
   void _calculate(){
     totalWorkingDays = 0;
-    checkedInDays = 0;
     missingCheckoutDays = 0;
     absentDays = 0;
     remainingWorkingDays = 0;
@@ -54,11 +52,9 @@ class Report_vm extends ChangeNotifier{
         bool checkedOut = matchedSession.getCheckOut != null && matchedSession.getCheckOut != '--|--';
 
         if (checkedIn && !checkedOut) {
-          checkedInDays++;
           missingCheckoutDays++;
           totalWorkPoints += 0.5;
         } else if (checkedIn && checkedOut) {
-          checkedInDays++;
           totalWorkPoints += 1;
         } else if (!checkedIn && checkedOut) {
           totalWorkPoints += 0.5;

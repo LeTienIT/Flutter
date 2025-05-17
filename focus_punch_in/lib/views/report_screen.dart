@@ -115,12 +115,11 @@ class ReportContent  extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          buildReportCard('Tổng số ngày làm việc', report.totalWorkingDays.toString(), Colors.blue),
+          buildReportCard('Tổng số ngày công trong tháng', report.totalWorkingDays.toString(), Colors.blue),
           buildReportCard('Số ngày làm việc còn lại', report.remainingWorkingDays.toString(), Colors.purple),
-          buildReportCard('Số ngày đã check-in', report.checkedInDays.toString(), Colors.green),
-          buildReportCard('Số ngày thiếu check-out', report.missingCheckoutDays.toString(), Colors.orange),
-          buildReportCard('Số ngày vắng mặt', report.absentDays.toString(), Colors.red),
-          buildReportCard('Số công trong tháng', report.totalWorkPoints.toStringAsFixed(1), Colors.teal),
+          buildReportCard('Số ngày nghỉ làm', report.absentDays.toString(), Colors.red),
+          buildReportCard('Số ngày không check-out', report.missingCheckoutDays.toString(), Colors.orange),
+          buildReportCard('Số công hiện tại', report.totalWorkPoints.toStringAsFixed(1), Colors.teal),
         ],
       ),
     );

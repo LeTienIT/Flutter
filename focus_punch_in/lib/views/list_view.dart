@@ -172,4 +172,83 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
       ),
     );
   }
+
+  TimeOfDay parseTimeFromString(String timeString) {
+    final parts = timeString.split(':');
+    if (parts.length != 2) return TimeOfDay.now();
+
+    final hour = int.tryParse(parts[0]) ?? 0;
+    final minute = int.tryParse(parts[1]) ?? 0;
+
+    return TimeOfDay(hour: hour, minute: minute);
+  }
+
+  void _showDialog(BuildContext context, WorkSession w, TimeSheetVM vm){
+    var timeCheckIn = parseTimeFromString(w.getCheckIn);
+    var timeCheckOut = parseTimeFromString(w.getCheckOut);
+    var wID = w.id;
+    var day = w.day;
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Ngày: ${w.getDay}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(child: Text('Giờ check-in')),
+                  Text(timeCheckIn.format(context)),
+                  IconButton(
+                      onPressed: () async {
+                        var pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: timeCheckIn,
+                            initialEntryMode: TimePickerEntryMode.dial
+                        );
+                        if(pickedTime != null){
+                          setState(() {
+                            timeCheckIn = pickedTime;
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.access_alarms))
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(child: Text('Giờ check-out')),
+                  Text(timeCheckOut.format(context)),
+                  IconButton(
+                      onPressed: () async {
+                        var pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: timeCheckOut,
+                            initialEntryMode: TimePickerEntryMode.dial
+                        );
+                        if(pickedTime != null){
+                          setState(() {
+                            timeCheckOut = pickedTime;
+                          });
+                        }
+                      },
+                      icon: Icon(Icons.access_alarms))
+                ],
+              ),
+              FilledButton(
+                  onPressed: () async {
+                    w.checkIn = DateTime(day.year,day.month,day.day,timeCheckIn.hour,timeCheckIn.minute);
+                    w.checkOut = DateTime(day.year,day.month,day.day,timeCheckOut.hour,timeCheckOut.minute);
+                    await vm.update(w, wID!);
+                  },
+                  child: Text('Cập nhật')
+              )
+            ],
+          ),
+        ),
+    );
+  }
+
 }

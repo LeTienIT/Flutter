@@ -43,7 +43,7 @@ class TimeSheetVM extends ChangeNotifier{
   }
   // ACTION
   Future<void> punchIn() async{
-    if(hasOpen)return;
+    if(today)return;
     DateTime d = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     final w = WorkSession(day: d, checkIn: DateTime.now());
     w.id = await _db.insert(w);
@@ -65,6 +65,28 @@ class TimeSheetVM extends ChangeNotifier{
     listView.removeWhere((e) => e.id == id);
     _list.removeWhere((e) => e.id == id);
     // print("DELETE $id");
+    notifyListeners();
+  }
+
+  Future<void> update(WorkSession w, int id) async{
+
+    if (w.checkIn != null && w.checkOut != null) {
+      w.isCompleted = 1;
+    } else {
+      w.isCompleted = 0;
+    }
+
+    await _db.update(w, id );
+
+    final index1 = listView.indexWhere((e) => e.id == w.id);
+    if (index1 != -1) {
+      listView[index1] = w;
+    }
+
+    final index2 = _list.indexWhere((e) => e.id == w.id);
+    if (index2 != -1) {
+      _list[index2] = w;
+    }
     notifyListeners();
   }
 }

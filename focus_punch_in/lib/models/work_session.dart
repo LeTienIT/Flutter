@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 class WorkSession{
   int? id;
   DateTime day;
-  final DateTime checkIn;
+  DateTime checkIn;
   DateTime? checkOut;
   int isCompleted;
 
