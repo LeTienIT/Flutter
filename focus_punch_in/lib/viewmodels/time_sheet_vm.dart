@@ -9,8 +9,9 @@ class TimeSheetVM extends ChangeNotifier{
   // STATE
   final List<WorkSession> _list = [];
   List<WorkSession> listView = [];
-  bool get hasOpen => _list.isNotEmpty && _list.last.checkOut == null;
+  bool get hasOpen => today && _list.isNotEmpty && _list.last.checkOut == null;
 
+  // Kiểm tra hôm nay đã có bản ghi chưa? Nếu có => true
   bool get today {
     if (_list.isEmpty) return false;
     final lastDate = DateFormat('yyyy-MM-dd').format(_list.last.day);
