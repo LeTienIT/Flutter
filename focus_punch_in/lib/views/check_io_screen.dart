@@ -3,6 +3,7 @@ import 'package:focus_punch_in/core/utils/notification_utils.dart';
 import 'package:focus_punch_in/services/SharedPrefService.dart';
 import 'package:focus_punch_in/viewmodels/theme_vm.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/time_sheet_vm.dart';
 
@@ -25,59 +26,82 @@ class CheckIOScreen extends StatelessWidget{
           children: [
             if (!(vm.today && !vm.hasOpen))
               Container(
-                padding: EdgeInsets.only(bottom: 26),
-                child: RichText(text: TextSpan(
-                        style: TextStyle(
-                          fontSize: 26,
-                          color: Colors.blue
-                        ),
-                        children: [
-                          TextSpan(
-                              text: 'Today:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
+                padding: EdgeInsets.only(bottom: 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                              fontSize: 26,
+                              color: Colors.blue
                           ),
-                          TextSpan(
-                              text: ' $dayCurrent'
-                          )
-                        ]
+                          children: [
+                            TextSpan(
+                                text: 'Today:',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                )
+                            ),
+                            TextSpan(
+                                text: ' $dayCurrent'
+                            )
+                          ]
                       )
-                  )
+                    )
+                  ],
+                )
               ),
             if (vm.today && !vm.hasOpen)
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 16),
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.shade100,
-                      blurRadius: 6,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(Icons.check_circle, color: Colors.green[700]),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Bạn đã hoàn thành chấm công ngày hôm nay',
-                        style: TextStyle(
-                          color: Colors.green[900],
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.shade100,
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green[700]),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Bạn đã hoàn thành chấm công ngày hôm nay',
+                            style: TextStyle(
+                              color: Colors.green[900],
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Positioned.fill(
+                    top: 0,
+                    child: Lottie.asset(
+                      'assets/lottie/Animation-fireworks.json',
+                      width: 250,
+                      height: 250,
+                      repeat: true,
+                      animate: true,
+                    ),
+                  ),
+                ],
               ),
             if (!(vm.today && !vm.hasOpen))
               Row(
