@@ -248,11 +248,36 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                   ),
                   FilledButton(
                       onPressed: () async {
-                        w.checkIn = DateTime(day.year,day.month,day.day,timeCheckIn.hour,timeCheckIn.minute);
-                        w.checkOut = DateTime(day.year,day.month,day.day,timeCheckOut.hour,timeCheckOut.minute);
-                        await vm.update(w, wID!);
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Xác nhận'),
+                            content: Text('Bạn có chắc chắn muốn cập nhật phiên làm việc này không?'),
+                            actions: [
+                              TextButton(
+                                // Đóng dialog và trả về 1 giá trị. về nguyên tác vẫn là đóng hoặc chuyển trang thôi
+                                onPressed: () => Navigator.pop(context, false),
+                                child: Text('Hủy'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: Text('Đồng ý'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          w.checkIn = DateTime(day.year, day.month, day.day, timeCheckIn.hour, timeCheckIn.minute);
+                          w.checkOut = DateTime(day.year, day.month, day.day, timeCheckOut.hour, timeCheckOut.minute);
+                          await vm.update(w, wID!);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Cập nhật thành công')),
+                          );
+                        }
                       },
-                      child: Text('Cập nhật')
+                    child: Text('Cập nhật'),
                   )
                 ],
               ),

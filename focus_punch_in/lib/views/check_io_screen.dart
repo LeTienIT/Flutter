@@ -58,7 +58,7 @@ class CheckIOScreen extends StatelessWidget{
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    margin: EdgeInsets.symmetric(vertical: 16),
+                    margin: EdgeInsets.all(20),
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
