@@ -32,22 +32,21 @@ class DatabaseHelper {
         check_out  TEXT
       )
     ''');
-  }
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion)async {
-    if(oldVersion < newVersion){
-      await db.execute('''
+    await db.execute('''
         ALTER TABLE sessions 
         ADD COLUMN isCompleted INTEGER NOT NULL DEFAULT 0
       ''');
 
-      await db.execute('''
+    await db.execute('''
         UPDATE sessions 
         SET isCompleted = CASE 
           WHEN check_out IS NOT NULL THEN 1 
           ELSE 0 
         END
       ''');
-    }
+  }
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion)async {
+
   }
 
   Future<int> insert(WorkSession w) async =>
@@ -57,7 +56,7 @@ class DatabaseHelper {
       (await db).update('sessions', w.toMap(), where: 'id=?',whereArgs: [id]);
 
   Future<List<WorkSession>> fetchAll() async {
-    final maps = await (await db).query('sessions', orderBy: 'id DESC');
+    final maps = await (await db).query('sessions', orderBy: 'id');
     // print("log: $maps");
     return maps.map((map) => WorkSession.fromMap(map)).toList();
   }

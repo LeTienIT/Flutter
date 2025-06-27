@@ -1,23 +1,24 @@
 import 'dart:async';
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:focus_punch_in/services/SharedPrefService.dart';
 import 'dart:io';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationUtil {
   static final FlutterLocalNotificationsPlugin _notifiPlugin =
   FlutterLocalNotificationsPlugin();
-
   bool _isInit = false;
   bool _isChannelCreated = false;
-
   Future<void> initNoti() async {
     if (_isInit) return;
-
     try {
+      tz.initializeTimeZones();
+      final String currentTime = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(currentTime));
+
       const initSettingAnd = AndroidInitializationSettings('@mipmap/ic_launcher');
       const initSettingIos = DarwinInitializationSettings(
         requestAlertPermission: true,
@@ -36,12 +37,9 @@ class NotificationUtil {
           // Xử lý khi nhấn vào thông báo
         },
       );
-
-      // Xin quyền trên Android 13+
       if (Platform.isAndroid) {
         await _requestAndroidPermissions();
       }
-
       _isInit = true;
     } catch (e) {
       debugPrint('Error initializing notifications: $e');
@@ -62,21 +60,15 @@ class NotificationUtil {
 
   Future<void> _createNotificationChannel() async {
     if (_isChannelCreated) return;
-
     try {
       const androidChannel = AndroidNotificationChannel(
-        'daily',
-        'Daily notification',
+        'daily', 'Daily notification',
         description: 'Check',
         importance: Importance.max,
         playSound: true,
       );
-
-      await _notifiPlugin
-          .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+      await _notifiPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(androidChannel);
-
       _isChannelCreated = true;
     } catch (e) {
       debugPrint('Error creating notification channel: $e');
@@ -86,17 +78,13 @@ class NotificationUtil {
   NotificationDetails notifiDetail() {
     return const NotificationDetails(
       android: AndroidNotificationDetails(
-        'daily',
-        'Daily notification',
+        'daily', 'Daily notification',
         channelDescription: 'Check',
         importance: Importance.max,
         priority: Priority.high,
         playSound: true,
-        // sound: RawResourceAndroidNotificationSound('notification'),
       ),
-      iOS: DarwinNotificationDetails(
-        // sound: 'default',
-      ),
+      iOS: DarwinNotificationDetails(),
     );
   }
 
@@ -105,14 +93,12 @@ class NotificationUtil {
       if (!_isInit) {
         await initNoti();
       }
-
-      await _createNotificationChannel(); // Đảm bảo channel đã được tạo
-
+      await _createNotificationChannel();
       await _notifiPlugin.show(
         id,
         title ?? 'No Title',
         body ?? 'No Body',
-        notifiDetail(), // Sử dụng notifiDetail() thay vì const NotificationDetails()
+        notifiDetail(),
       );
     } catch (e) {
       debugPrint('Error showing notification: $e');
@@ -123,11 +109,9 @@ class NotificationUtil {
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
-
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
-
     return scheduled;
   }
 
@@ -136,20 +120,13 @@ class NotificationUtil {
       if (!_isInit) {
         await initNoti();
       }
-
       await _createNotificationChannel();
-
       final nextScheduledTime = _nextInstanceOfTime(hour, minute);
-      debugPrint('Scheduling notification at: $nextScheduledTime');
-
       await _notifiPlugin.zonedSchedule(
-        id,
-        title,
-        body,
+        id, title, body,
         nextScheduledTime,
         notifiDetail(),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        // uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
       );
     } catch (e) {
@@ -159,10 +136,9 @@ class NotificationUtil {
 
   Future<void> registerNotificationDefault() async {
     try {
-      // final prefs = SharedPrefService.instance;s
       final isRegister = SharedPrefService.instance.getValue<bool>('isRegister_notification') ?? false;
 
-      // if (!isRegister) {
+      if (!isRegister) {
         await showNotificationDaily(111, "Check in", "Bạn đã chấm công sáng chưa?", 08, 25);
         await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", 17, 35);
         SharedPrefService.instance.setValue<bool>('isRegister_notification', true);
@@ -170,8 +146,7 @@ class NotificationUtil {
         SharedPrefService.instance.setValue<int>('m_i', 25);
         SharedPrefService.instance.setValue<int>('h_o', 17);
         SharedPrefService.instance.setValue<int>('m_o', 35);
-        // print("Đã đăng ký thông báo hàng ngày");
-      // }
+      }
     } catch (e) {
       print('Error registering notifications: $e');
     }
@@ -179,8 +154,8 @@ class NotificationUtil {
 
   Future<void> registerNotificationCustomize({required int h_in, required int m_in, required int h_o, required int m_o}) async {
     try {
-      await showNotificationDaily(111, "Check in", "Bạn đã chấm công sáng chưa?", h_in, m_in);
-      await showNotificationDaily(222, "Check out", "Bạn đã chấm công về chưa?", h_o, m_o);
+      await showNotificationDaily(111, "Check in", "Test kiểm tra checkIn", h_in, m_in);
+      await showNotificationDaily(222, "Check out", "Test kiểm tra checkOut", h_o, m_o);
       SharedPrefService.instance.setValue<int>('h_in', h_in);
       SharedPrefService.instance.setValue<int>('m_i', m_in);
       SharedPrefService.instance.setValue<int>('h_o', h_o);
@@ -189,5 +164,35 @@ class NotificationUtil {
       print('Error registering notifications: $e');
     }
   }
+
+  Future<void> testScheduleNotificationSoon() async {
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduled = now.add(Duration(seconds: 30));
+    debugPrint('Scheduling test notification at $scheduled');
+
+    await _notifiPlugin.zonedSchedule(
+      999, // ID test
+      '🔔 Test Gấp',
+      'Thông báo test sau 30 giây',
+      scheduled,
+      notifiDetail(),
+
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+    debugPrintPendingNotifications('test 30s');
+  }
+
+  Future<void> debugPrintPendingNotifications(String title) async {
+    final pending = await _notifiPlugin.pendingNotificationRequests();
+    if (pending.isEmpty) {
+      debugPrint('No scheduled notifications.');
+    } else {
+      debugPrint(title);
+      for (final p in pending) {
+        debugPrint('🔔 ID: ${p.id}, Title: ${p.title}, Body: ${p.body}');
+      }
+    }
+  }
+
 
 }
