@@ -8,6 +8,8 @@ import '../models/work_session.dart';
 import '../viewmodels/time_sheet_vm.dart';
 
 class TimeSheetScreen extends StatefulWidget{
+  const TimeSheetScreen({super.key});
+
 
   @override
   State<StatefulWidget> createState() => _TimeSheetScreen();
@@ -19,17 +21,8 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
     final vm = context.watch<TimeSheetVM>();
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Check in/out'),
-          actions: [
-            IconButton(
-                onPressed: ()=>{Navigator.pushNamed(context, '/setting')},
-                icon: Icon(Icons.settings)
-            ),
-            IconButton(
-                onPressed: ()=>{Navigator.pushNamed(context, '/report')},
-                icon: Icon(Icons.analytics_rounded)
-            )
-          ],
+          title: const Text('Danh sách chấm công'),
+          centerTitle: true,
       ),
       body: Column(
         children: [
@@ -155,23 +148,6 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                   );
                   // return
                 },
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 10),
-            child: ElevatedButton(
-              onPressed: ()=>{Navigator.pushNamed(context, '/checkIn')},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8), // Bo góc 8px
-                  side: BorderSide(color: Colors.grey), // Viền xám
-                ),
-                elevation: 2, // Độ đổ bóng
-              ),
-              child: Text("Check in/out"),
             ),
           ),
         ],

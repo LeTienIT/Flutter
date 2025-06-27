@@ -110,7 +110,10 @@ class CheckIOScreen extends StatelessWidget{
                 children: [
                   ElevatedButton.icon(
                     icon: const Icon(Icons.login),
-                    onPressed: vm.today ? null : vm.punchIn,
+                    onPressed: vm.today ? null : (){
+                      vm.punchIn();
+                      _showDialog(context, 'Thông báo', 'Bạn đã chấm công, rất tốt, nhớ chấm thêm 1 lần lúc về nhé');
+                    },
                     label: const Text('Check in'),
                   ),
                   SizedBox(width: 20,),
@@ -131,6 +134,38 @@ class CheckIOScreen extends StatelessWidget{
           ],
         )
       ),
+    );
+  }
+
+  void _showDialog(BuildContext context, String title, String content){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  content,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                ElevatedButton.icon(
+                    onPressed: (){
+                      Navigator.pop(context);
+                    },
+                    label: Text('Ok')
+                )
+              ],
+            ),
+          );
+        }
     );
   }
 }

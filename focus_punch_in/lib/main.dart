@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
         '/setting': (context) => SettingScreen(),
         '/report' : (context) => ReportScreen()
       },
-      home: TimeSheetScreen(),
+      home: ReportScreen(),
     );
   }
 }

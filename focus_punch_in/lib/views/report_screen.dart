@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:focus_punch_in/viewmodels/time_sheet_vm.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +11,7 @@ import '../viewmodels/report_vm.dart';
 
 class ReportScreen extends StatelessWidget{
 
-  ReportScreen({super.key});
+  const ReportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,8 @@ class ReportScreen extends StatelessWidget{
 }
 
 class ReportContent  extends StatelessWidget {
+  const ReportContent({super.key});
+
   @override
   Widget build(BuildContext context) {
     final reportVM = context.watch<Report_vm>();
@@ -46,12 +49,53 @@ class ReportContent  extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Báo cáo'),
+        centerTitle: true,
       ),
-      body: Column(
-
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Divider(height: 1,),
+            dropList(context,reportVM),
+            report_content(context, reportVM),
+            Center(
+              child: ElevatedButton(
+                onPressed: ()=>{Navigator.pushNamed(context, '/checkIn')},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8), // Bo góc 8px
+                    side: BorderSide(color: Colors.grey), // Viền xám
+                  ),
+                  elevation: 2, // Độ đổ bóng
+                ),
+                child: Text("Chấm công"),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: SpeedDial(
+        icon: Icons.add,
+        activeIcon: Icons.clear,
         children: [
-          dropList(context,reportVM),
-          report_content(context, reportVM)
+          SpeedDialChild(
+              child: Icon(Icons.settings),
+              label: 'Cài đặt',
+              onTap: (){
+                Navigator.pushNamed(context, '/setting');
+              }
+          ),
+          SpeedDialChild(
+              child: Icon(Icons.list),
+              label: 'Danh sách',
+              onTap: (){
+                Navigator.pushNamed(context, '/list');
+              }
+          ),
         ],
       ),
     );
@@ -91,20 +135,6 @@ class ReportContent  extends StatelessWidget {
               ),
             ],
           ),
-          Divider(thickness: 1,),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.calendar_today, color: Colors.blueAccent),
-              const SizedBox(width: 8),
-              Text('Tháng ${report.month}',
-                style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,)
-              )
-            ],
-          )
         ],
       )
     );
