@@ -232,15 +232,17 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                       Text(w.getCheckOut=='--|--' ? w.getCheckOut : timeCheckOut.format(context)),
                       IconButton(
                           onPressed: () async {
-                            var pickedTime = await showTimePicker(
-                                context: context,
-                                initialTime: timeCheckOut,
-                                initialEntryMode: TimePickerEntryMode.dial
-                            );
-                            if(pickedTime != null){
-                              setState(() {
-                                timeCheckOut = pickedTime;
-                              });
+                            if(w.getCheckOut != '--|--'){
+                              var pickedTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: timeCheckOut,
+                                  initialEntryMode: TimePickerEntryMode.dial
+                              );
+                              if(pickedTime != null){
+                                setState(() {
+                                  timeCheckOut = pickedTime;
+                                });
+                              }
                             }
                           },
                           icon: Icon(Icons.access_alarms))
@@ -269,7 +271,9 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
 
                         if (confirm == true) {
                           w.checkIn = DateTime(day.year, day.month, day.day, timeCheckIn.hour, timeCheckIn.minute);
-                          w.checkOut = DateTime(day.year, day.month, day.day, timeCheckOut.hour, timeCheckOut.minute);
+                          if(w.getCheckOut != '--|--') {
+                            w.checkOut = DateTime(day.year, day.month, day.day, timeCheckOut.hour, timeCheckOut.minute);
+                          }
                           await vm.update(w, wID!);
 
                           ScaffoldMessenger.of(context).showSnackBar(

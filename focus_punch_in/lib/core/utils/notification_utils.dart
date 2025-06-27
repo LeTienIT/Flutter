@@ -154,8 +154,8 @@ class NotificationUtil {
 
   Future<void> registerNotificationCustomize({required int h_in, required int m_in, required int h_o, required int m_o}) async {
     try {
-      await showNotificationDaily(111, "Check in", "Test kiểm tra checkIn", h_in, m_in);
-      await showNotificationDaily(222, "Check out", "Test kiểm tra checkOut", h_o, m_o);
+      await showNotificationDaily(111, "Check in", "Hôm nay bạn đã chấm công chưa? Đừng quên nhé!", h_in, m_in);
+      await showNotificationDaily(222, "Check out", "Đừng quên chấm công khi ra về. Cho tôi biết bạn đã chấm chưa?", h_o, m_o);
       SharedPrefService.instance.setValue<int>('h_in', h_in);
       SharedPrefService.instance.setValue<int>('m_i', m_in);
       SharedPrefService.instance.setValue<int>('h_o', h_o);
