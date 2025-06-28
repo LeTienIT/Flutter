@@ -1,7 +1,10 @@
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:focus_punch_in/models/work_session.dart';
+
+import '../services/SharedPrefService.dart';
 
 class Report_vm extends ChangeNotifier{
   int month;
@@ -14,16 +17,61 @@ class Report_vm extends ChangeNotifier{
   int missingCheckoutDays = 0;
   double totalWorkPoints = 0;
 
+  int soNgayDiMuon = 0;
+  int soNgayVeSom = 0;
+  int soNgayDiMuonKhongQuaPhut = 0;
+
+  late int gioVao;
+  late int phutVao;
+  late int gioRa;
+  late int phutRa;
+
+  late int soNgayDuocDiMuon;
+  late int soPhutDuocDiMuon;
+  late int soPhepTrongThang;
+
+  int get soNgayDiMuonHopLe => soNgayDiMuonKhongQuaPhut <= soNgayDuocDiMuon ? soNgayDiMuonKhongQuaPhut : soNgayDuocDiMuon;
+  int get soNgayDiMuonBiTru => soNgayDiMuon - soNgayDiMuonHopLe >=0 ?(soNgayDiMuon - soNgayDiMuonHopLe) : 0;
+
+  double encodeDateTimeToDouble(DateTime dt) => dt.hour + dt.minute / 60.0;
+
+  Map<String, int> bieuDoTronNgayLam = {};
+  Map<String, int> bieuDoTronDiMuon = {};
+  List<FlSpot> bieuDoDuongCheckIn = [];
+  List<FlSpot> bieuDoDuongCheckOut = [];
+
   Report_vm(this.month, this.year, this.sourceList){
+    gioVao = SharedPrefService.instance.getValue<int>('gioVao') ?? 8;
+    phutVao = SharedPrefService.instance.getValue<int>('phutVao') ?? 30;
+    gioRa = SharedPrefService.instance.getValue<int>('gioRa') ?? 17;
+    phutRa = SharedPrefService.instance.getValue<int>('phutRa') ?? 30;
+
+    soNgayDuocDiMuon = SharedPrefService.instance.getValue<int>('soNgayDenMuon') ?? 0;
+    soPhutDuocDiMuon = SharedPrefService.instance.getValue<int>('soPhutDenMuon') ?? 0;
+    soPhepTrongThang = SharedPrefService.instance.getValue<int>('soNgayPhepThang') ?? 0;
+
     _calculate();
   }
 
   void _calculate(){
+    ///tổng ngày công trong tháng
     totalWorkingDays = 0;
-    missingCheckoutDays = 0;
-    absentDays = 0;
+    ///số ngày làm việc còn lại trong tháng
     remainingWorkingDays = 0;
+    ///số ngày không thực hiện điểm danh khi về
+    missingCheckoutDays = 0;
+    ///số ngày nghỉ làm
+    absentDays = 0;
+    ///tổng số công hiện tại
     totalWorkPoints = 0;
+
+    ///số ngày đi muộn
+    soNgayDiMuon = 0;
+    ///số ngày về sớm
+    soNgayVeSom = 0;
+    ///số ngày đi muộn không quá số phút quy định
+    soNgayDiMuonKhongQuaPhut = 0;
+    bieuDoTronNgayLam.clear();bieuDoTronDiMuon.clear();bieuDoDuongCheckIn.clear();bieuDoDuongCheckOut.clear();
 
     final today = DateTime.now();
     final daysInMonth = DateUtils.getDaysInMonth(this.year, this.month);
@@ -47,9 +95,33 @@ class Report_vm extends ChangeNotifier{
 
       if (matchedSession == null) {
         absentDays++;
-      }else {
+      }
+      else {
+        DateTime checkIn_D = matchedSession.checkIn;
+        DateTime? checkOut_D = matchedSession.checkOut;
+
+        double checkInValue = encodeDateTimeToDouble(matchedSession.checkIn);
+        bieuDoDuongCheckIn.add(FlSpot(workDay.day.toDouble(), checkInValue));
+
         bool checkedIn = matchedSession.getCheckIn != null && matchedSession.getCheckIn != '--|--';
         bool checkedOut = matchedSession.getCheckOut != null && matchedSession.getCheckOut != '--|--';
+
+        final gioVaoDung = DateTime(workDay.year, workDay.month, workDay.day, gioVao, phutVao);
+        if (checkIn_D.isAfter(gioVaoDung)) {
+          soNgayDiMuon++;
+          final lateMinutes = checkIn_D.difference(gioVaoDung).inMinutes;
+          if (lateMinutes <= soPhutDuocDiMuon) {
+            soNgayDiMuonKhongQuaPhut++;
+          }
+        }
+        if(checkOut_D!=null){
+          double checkOutValue = encodeDateTimeToDouble(matchedSession.checkOut!);
+          bieuDoDuongCheckOut.add(FlSpot(workDay.day.toDouble(), checkOutValue));
+          final gioRaDung = DateTime(workDay.year, workDay.month, workDay.day, gioRa, phutRa);
+          if (checkOut_D.isBefore(gioRaDung)) {
+            soNgayVeSom++;
+          }
+        }
 
         if (checkedIn && !checkedOut) {
           missingCheckoutDays++;
@@ -62,6 +134,16 @@ class Report_vm extends ChangeNotifier{
       }
     }
 
+    int soNgayLamThucTe = totalWorkingDays - absentDays - remainingWorkingDays;
+    soNgayLamThucTe = soNgayLamThucTe.clamp(0, totalWorkingDays);
+
+    bieuDoTronNgayLam['Ngày Làm'] = soNgayLamThucTe;
+    bieuDoTronNgayLam['Ngày nghỉ'] = absentDays;
+    bieuDoTronNgayLam['Còn lại'] = remainingWorkingDays;
+
+    bieuDoTronDiMuon['Đi muộn'] = soNgayDiMuonHopLe;
+    bieuDoTronDiMuon['Đi muộn bị trừ'] = soNgayDiMuonBiTru;
+
     notifyListeners();
   }
 
@@ -71,7 +153,6 @@ class Report_vm extends ChangeNotifier{
 
   bool isSameDayOrBefore(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day <= b.day;
-
 
   void updateMonth(int newMonth){
     this.month = newMonth;

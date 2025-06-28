@@ -15,6 +15,7 @@ void main() async{
   await SharedPrefService.instance.init();
   await NotificationUtil().initNoti();
   await NotificationUtil().registerNotificationDefault();
+  // await NotificationUtil().testScheduleNotificationSoon();
   runApp(
       MultiProvider(
           providers: [

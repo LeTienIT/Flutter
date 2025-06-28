@@ -50,6 +50,8 @@ class SharedPrefService{
     else{
       throw Exception("Không tìm thấy kiểu tướng ứng SET (String / bool)");
     }
+
+    print("Đã lưu: $key : $value");
   }
 
   Future<bool> removeKey(String key){

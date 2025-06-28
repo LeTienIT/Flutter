@@ -17,7 +17,7 @@ class CheckIOScreen extends StatelessWidget{
 
     return Scaffold(
       appBar: AppBar(
-          title: Text('Chấm công'),
+          title: Text('Điểm danh'),
       ),
       body: Center(
         child: Column(

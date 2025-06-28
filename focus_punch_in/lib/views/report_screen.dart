@@ -8,6 +8,7 @@ import 'package:focus_punch_in/viewmodels/time_sheet_vm.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodels/report_vm.dart';
+import '../widget/pieChart.dart';
 
 class ReportScreen extends StatelessWidget{
 
@@ -22,10 +23,6 @@ class ReportScreen extends StatelessWidget{
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (timeSheet.list.isEmpty) {
-      return Center(child: Text('Không có dữ liệu để phân tích'));
-    }
-
     return ChangeNotifierProvider(
       create: (_) => Report_vm(
         DateTime.now().month,
@@ -35,11 +32,9 @@ class ReportScreen extends StatelessWidget{
       child: ReportContent(),
     );
   }
-
-
 }
 
-class ReportContent  extends StatelessWidget {
+class ReportContent extends StatelessWidget {
   const ReportContent({super.key});
 
   @override
@@ -48,7 +43,7 @@ class ReportContent  extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Báo cáo'),
+        title: Text('Thông tin'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -57,8 +52,22 @@ class ReportContent  extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Divider(height: 1,),
-            dropList(context,reportVM),
-            report_content(context, reportVM),
+            if(reportVM.sourceList.isNotEmpty)...[
+              dropList(context,reportVM),
+              report_content(context, reportVM)
+            ]
+            else
+                Card(
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  color: Colors.green,
+                  child: Padding(
+                      padding: EdgeInsets.all(16),
+                    child: Text(
+                        'Hãy bắt đầu lưu lại các lần điểm danh của bạn, à đừng quên trong cài đặt, có 1 số thứ bạn nên cài đặt'!
+                    )
+                  )
+                ),
             Center(
               child: ElevatedButton(
                 onPressed: ()=>{Navigator.pushNamed(context, '/checkIn')},
@@ -72,7 +81,7 @@ class ReportContent  extends StatelessWidget {
                   ),
                   elevation: 2, // Độ đổ bóng
                 ),
-                child: Text("Chấm công"),
+                child: Text("Điểm danh"),
               ),
             ),
           ],
@@ -147,9 +156,19 @@ class ReportContent  extends StatelessWidget {
         children: [
           buildReportCard('Tổng số ngày công trong tháng', report.totalWorkingDays.toString(), Colors.blue),
           buildReportCard('Số ngày làm việc còn lại', report.remainingWorkingDays.toString(), Colors.purple),
+          buildReportCard('Tổng số [ngày làm/công] hiện tại', report.totalWorkPoints.toStringAsFixed(1), Colors.teal),
           buildReportCard('Số ngày nghỉ làm', report.absentDays.toString(), Colors.red),
-          buildReportCard('Số ngày không check-out', report.missingCheckoutDays.toString(), Colors.orange),
-          buildReportCard('Số công hiện tại', report.totalWorkPoints.toStringAsFixed(1), Colors.teal),
+          buildReportCard('Số ngày không điểm danh VỀ', report.missingCheckoutDays.toString(), Colors.orange),
+          buildReportCard('Tổng số ngày đi muộn', report.soNgayDiMuon.toString(), Colors.orange),
+          buildReportCard('Số ngày đi muộn < ${report.soPhutDuocDiMuon} phút', report.soNgayDiMuonKhongQuaPhut .toString(), Colors.orange),
+          buildReportCard('Số ngày đi muộn HỢP LỆ', report.soNgayDiMuonHopLe.toString(),Colors.orange),
+          buildReportCard('Số ngày đi muộn BỊ TRỪ', report.soNgayDiMuonBiTru.toString(),Colors.orange),
+
+          PieChartWidget(report.bieuDoTronNgayLam,tieuDeBD: 'Biểu đồ thời gian làm',showTitle: false,),
+          SizedBox(height: 10),
+          PieChartWidget(report.bieuDoTronDiMuon,tieuDeBD: 'Biểu đồ đi muộn',showTitle: false,),
+          SizedBox(height: 10),
+
         ],
       ),
     );

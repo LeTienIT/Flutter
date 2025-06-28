@@ -21,7 +21,7 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
     final vm = context.watch<TimeSheetVM>();
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Danh sách chấm công'),
+          title: const Text('Danh sách'),
           centerTitle: true,
       ),
       body: Column(
@@ -102,8 +102,7 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                         vm.delete(item.id!);
                       },
                       child: Card(
-                        color: item.getCheckOut ==  '--|--' ?
-                        Theme.of(context).colorScheme.secondary : null,
+                        color: item.getCheckOut ==  '--|--' ? Theme.of(context).colorScheme.secondary : null,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
