@@ -14,7 +14,6 @@ class CheckIOScreen extends StatelessWidget{
   Widget build(BuildContext context)  {
     final vm = context.watch<TimeSheetVM>();
     final dayCurrent = DateFormat('dd/MM/yyyy').format(DateTime.now());
-
     return Scaffold(
       appBar: AppBar(
           title: Text('Điểm danh'),

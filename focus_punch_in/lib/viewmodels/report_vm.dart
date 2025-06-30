@@ -46,9 +46,9 @@ class Report_vm extends ChangeNotifier{
     gioRa = SharedPrefService.instance.getValue<int>('gioRa') ?? 17;
     phutRa = SharedPrefService.instance.getValue<int>('phutRa') ?? 30;
 
-    soNgayDuocDiMuon = SharedPrefService.instance.getValue<int>('soNgayDenMuon') ?? 0;
-    soPhutDuocDiMuon = SharedPrefService.instance.getValue<int>('soPhutDenMuon') ?? 0;
-    soPhepTrongThang = SharedPrefService.instance.getValue<int>('soNgayPhepThang') ?? 0;
+    soNgayDuocDiMuon = SharedPrefService.instance.getValue<int>('soNgayDenMuon') ?? 3;
+    soPhutDuocDiMuon = SharedPrefService.instance.getValue<int>('soPhutDenMuon') ?? 15;
+    soPhepTrongThang = SharedPrefService.instance.getValue<int>('soNgayPhepThang') ?? 1;
 
     _calculate();
   }
@@ -137,12 +137,12 @@ class Report_vm extends ChangeNotifier{
     int soNgayLamThucTe = totalWorkingDays - absentDays - remainingWorkingDays;
     soNgayLamThucTe = soNgayLamThucTe.clamp(0, totalWorkingDays);
 
-    bieuDoTronNgayLam['Ngày Làm'] = soNgayLamThucTe;
-    bieuDoTronNgayLam['Ngày nghỉ'] = absentDays;
-    bieuDoTronNgayLam['Còn lại'] = remainingWorkingDays;
+    bieuDoTronNgayLam['Số ngày làm thực tế'] = soNgayLamThucTe;
+    bieuDoTronNgayLam['Số ngày nghỉ làm'] = absentDays;
+    bieuDoTronNgayLam['Thời gian còn lại của tháng'] = remainingWorkingDays;
 
-    bieuDoTronDiMuon['Đi muộn'] = soNgayDiMuonHopLe;
-    bieuDoTronDiMuon['Đi muộn bị trừ'] = soNgayDiMuonBiTru;
+    bieuDoTronDiMuon['Đi muộn > $soPhutDuocDiMuon\''] = soNgayDiMuonBiTru;
+    bieuDoTronDiMuon['Đi muộn < $soPhutDuocDiMuon\''] = soNgayDiMuonHopLe;
 
     notifyListeners();
   }

@@ -14,7 +14,7 @@ class TimeSheetVM extends ChangeNotifier{
   // Kiểm tra hôm nay đã có bản ghi chưa? Nếu có => true
   bool get today {
     if (_list.isEmpty) return false;
-    final lastDate = DateFormat('yyyy-MM-dd').format(_list.last.day);
+    final lastDate = DateFormat('yyyy-MM-dd').format(_list.first.day);
     final todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     return lastDate == todayDate;
   }
@@ -48,8 +48,8 @@ class TimeSheetVM extends ChangeNotifier{
     DateTime d = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     final w = WorkSession(day: d, checkIn: DateTime.now());
     w.id = await _db.insert(w);
-    _list.add(w);
-    listView.add(w);
+    _list.insert(0,w);
+    listView.insert(0,w);
     notifyListeners();
   }
 

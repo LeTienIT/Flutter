@@ -167,99 +167,101 @@ class _SettingScreen extends State<SettingScreen>{
             title: Text('Cài đặt bổ sung'),
             leading: Icon(Icons.more),
             children: [
-              Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(child: Text('Giờ Vào')),
-                          Text(time_In.format(context)),
-                          IconButton(
-                              onPressed: () async {
-                                var pickedTime = await showTimePicker(
-                                    context: context,
-                                    initialTime: time_checkIn,
-                                    initialEntryMode: TimePickerEntryMode.dial
-                                );
-                                if(pickedTime != null){
-                                  setState(() {
-                                    time_checkIn = pickedTime;
-                                  });
-                                }
-                              },
-                              icon: Icon(Icons.access_alarms))
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child: Text('Giờ về')),
-                          Text(time_Out.format(context)),
-                          IconButton(
-                              onPressed: () async {
-                                var pickedTime = await showTimePicker(
-                                    context: context,
-                                    initialTime: time_checkOut,
-                                    initialEntryMode: TimePickerEntryMode.dial
-                                );
-                                if(pickedTime != null){
-                                  setState(() {
-                                    time_checkOut = pickedTime;
-                                  });
-                                }
-                              },
-                              icon: Icon(Icons.access_alarms))
-                        ],
-                      ),
-
-                      SessionTitle(title: 'Số ngày được phép đến muộn'),
-                      NumberForm(amount: _amount, title: 'VD: 3', validator: Tool.amountValidator),
-
-                      SessionTitle(title: 'Số phút được phép đi muộn'),
-                      NumberForm(amount: _minus, title: 'VD: 15', validator: Tool.amountValidator),
-
-                      SessionTitle(title: 'Số ngày nghỉ phép của 1 tháng'),
-                      NumberForm(amount: _dayOff, title: 'VD: 1', validator: Tool.amountValidator),
-
-                      Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(10),
-                        child: FilledButton(
-                            onPressed: _isRegistering ? null : () async{
-                              if(_isRegistering)return;
-                              setState(() {
-                                _isRegistering = true;
-                              });
-
-                              if(_formKey.currentState!.validate()){
-                                int soNgayDenMuon = int.parse(_amount.text);
-                                int soPhutDenMuon = int.parse(_minus.text);
-                                int soNgayPhepThang = int.parse(_dayOff.text);
-
-                                SharedPrefService.instance.setValue<int>('gioVao', time_In.hour);
-                                SharedPrefService.instance.setValue<int>('phutVao', time_In.minute);
-                                SharedPrefService.instance.setValue<int>('gioRa', time_Out.hour);
-                                SharedPrefService.instance.setValue<int>('phutRa', time_Out.minute);
-
-                                SharedPrefService.instance.setValue<int>('soNgayDenMuon', soNgayDenMuon);
-                                SharedPrefService.instance.setValue<int>('soPhutDenMuon', soPhutDenMuon);
-                                SharedPrefService.instance.setValue<int>('soNgayPhepThang', soNgayPhepThang);
-
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đã lưu cài đặt')));
-                              }
-
-                              setState(() {
-                                _isRegistering = false;
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Đã lưu cài đặt của bạn'),backgroundColor: Colors.green,)
+              Padding(padding: EdgeInsets.all(28),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: Text('Giờ Vào')),
+                        Text(time_In.format(context)),
+                        IconButton(
+                            onPressed: () async {
+                              var pickedTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: time_In,
+                                  initialEntryMode: TimePickerEntryMode.dial
                               );
+                              if(pickedTime != null){
+                                setState(() {
+                                  time_In = pickedTime;
+                                });
+                              }
                             },
-                            child: Text('Apply')
-                        ),
-                      )
-                    ],
-                  ),
+                            icon: Icon(Icons.access_alarms))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: Text('Giờ về')),
+                        Text(time_Out.format(context)),
+                        IconButton(
+                            onPressed: () async {
+                              var pickedTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: time_Out,
+                                  initialEntryMode: TimePickerEntryMode.dial
+                              );
+                              if(pickedTime != null){
+                                setState(() {
+                                  time_Out = pickedTime;
+                                });
+                              }
+                            },
+                            icon: Icon(Icons.access_alarms))
+                      ],
+                    ),
+
+                    SessionTitle(title: 'Số ngày được phép đến muộn'),
+                    NumberForm(amount: _amount, title: 'VD: 3', validator: Tool.amountValidator),
+
+                    SessionTitle(title: 'Số phút được phép đi muộn'),
+                    NumberForm(amount: _minus, title: 'VD: 15', validator: Tool.amountValidator),
+
+                    SessionTitle(title: 'Số ngày nghỉ phép của 1 tháng'),
+                    NumberForm(amount: _dayOff, title: 'VD: 1', validator: Tool.amountValidator),
+
+                    Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(10),
+                      child: FilledButton(
+                          onPressed: _isRegistering ? null : () async{
+                            if(_isRegistering)return;
+                            setState(() {
+                              _isRegistering = true;
+                            });
+
+                            if(_formKey.currentState!.validate()){
+                              int soNgayDenMuon = int.parse(_amount.text);
+                              int soPhutDenMuon = int.parse(_minus.text);
+                              int soNgayPhepThang = int.parse(_dayOff.text);
+
+                              SharedPrefService.instance.setValue<int>('gioVao', time_In.hour);
+                              SharedPrefService.instance.setValue<int>('phutVao', time_In.minute);
+                              SharedPrefService.instance.setValue<int>('gioRa', time_Out.hour);
+                              SharedPrefService.instance.setValue<int>('phutRa', time_Out.minute);
+
+                              SharedPrefService.instance.setValue<int>('soNgayDenMuon', soNgayDenMuon);
+                              SharedPrefService.instance.setValue<int>('soPhutDenMuon', soPhutDenMuon);
+                              SharedPrefService.instance.setValue<int>('soNgayPhepThang', soNgayPhepThang);
+
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đã lưu cài đặt')));
+                            }
+
+                            setState(() {
+                              _isRegistering = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Đã lưu cài đặt của bạn'),backgroundColor: Colors.green,)
+                            );
+                          },
+                          child: Text('Apply')
+                      ),
+                    )
+                  ],
+                ),
+              ),
               )
             ],
           )

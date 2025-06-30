@@ -28,7 +28,7 @@ class PieChartWidget extends StatelessWidget{
                 textAlign: TextAlign.center,
               ),
             ),
-            if(data.isNotEmpty)...[
+            if(data.isNotEmpty && (data.entries.first.value > 0 || data.entries.last.value > 0))...[
               Wrap(
                 children: [
                   AspectRatio(

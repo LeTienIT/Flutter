@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:focus_punch_in/viewmodels/time_sheet_vm.dart';
+import 'package:focus_punch_in/widget/lineChart.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodels/report_vm.dart';
@@ -16,7 +17,7 @@ class ReportScreen extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    final timeSheet = Provider.of<TimeSheetVM>(context);
+    final timeSheet = context.watch<TimeSheetVM>();
     final sourceList = timeSheet.list;
 
     if (timeSheet.isLoading) {
@@ -43,49 +44,36 @@ class ReportContent extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Thông tin'),
+        title: Text('Tổng quát'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Divider(height: 1,),
-            if(reportVM.sourceList.isNotEmpty)...[
-              dropList(context,reportVM),
-              report_content(context, reportVM)
-            ]
-            else
-                Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  color: Colors.green,
-                  child: Padding(
-                      padding: EdgeInsets.all(16),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Divider(height: 1,),
+          if(reportVM.sourceList.isNotEmpty)...[
+            dropList(context,reportVM),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(20),
+                child: report_content(context, reportVM),
+              ),
+            ),
+
+          ]
+          else
+            Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.green,
+                child: Padding(
+                    padding: EdgeInsets.all(16),
                     child: Text(
                         'Hãy bắt đầu lưu lại các lần điểm danh của bạn, à đừng quên trong cài đặt, có 1 số thứ bạn nên cài đặt'!
                     )
-                  )
-                ),
-            Center(
-              child: ElevatedButton(
-                onPressed: ()=>{Navigator.pushNamed(context, '/checkIn')},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Bo góc 8px
-                    side: BorderSide(color: Colors.grey), // Viền xám
-                  ),
-                  elevation: 2, // Độ đổ bóng
-                ),
-                child: Text("Điểm danh"),
-              ),
+                )
             ),
-          ],
-        ),
+        ],
       ),
       floatingActionButton: SpeedDial(
         icon: Icons.add,
@@ -107,6 +95,19 @@ class ReportContent extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: Padding(padding: EdgeInsets.all(5),
+        child: ElevatedButton(
+          onPressed: ()=>{Navigator.pushNamed(context, '/checkIn')},
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8), // Bo góc 8px
+              side: BorderSide(color: Colors.grey), // Viền xám
+            ),
+            elevation: 2, // Độ đổ bóng
+          ),
+          child: Text("Điểm danh"),
+        ),),
     );
   }
 
@@ -154,21 +155,20 @@ class ReportContent extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          buildReportCard('Tổng số ngày công trong tháng', report.totalWorkingDays.toString(), Colors.blue),
-          buildReportCard('Số ngày làm việc còn lại', report.remainingWorkingDays.toString(), Colors.purple),
-          buildReportCard('Tổng số [ngày làm/công] hiện tại', report.totalWorkPoints.toStringAsFixed(1), Colors.teal),
-          buildReportCard('Số ngày nghỉ làm', report.absentDays.toString(), Colors.red),
-          buildReportCard('Số ngày không điểm danh VỀ', report.missingCheckoutDays.toString(), Colors.orange),
+          buildReportCard('Số ngày làm của tháng', report.totalWorkingDays.toString(), Colors.blue),
+          buildReportCard('Số ngày làm còn lại của tháng', report.remainingWorkingDays.toString(), Colors.purple),
+          buildReportCard('Số ngày đã làm thực tế', report.totalWorkPoints.toStringAsFixed(1), Colors.teal),
+          buildReportCard('Nghỉ làm', report.absentDays.toString(), Colors.red),
+          buildReportCard('Không điểm danh VỀ', report.missingCheckoutDays.toString(), Colors.orange),
           buildReportCard('Tổng số ngày đi muộn', report.soNgayDiMuon.toString(), Colors.orange),
-          buildReportCard('Số ngày đi muộn < ${report.soPhutDuocDiMuon} phút', report.soNgayDiMuonKhongQuaPhut .toString(), Colors.orange),
-          buildReportCard('Số ngày đi muộn HỢP LỆ', report.soNgayDiMuonHopLe.toString(),Colors.orange),
-          buildReportCard('Số ngày đi muộn BỊ TRỪ', report.soNgayDiMuonBiTru.toString(),Colors.orange),
+          buildReportCard('Số ngày đi muộn < ${report.soPhutDuocDiMuon}\'', report.soNgayDiMuonKhongQuaPhut .toString(), Colors.orange),
+          buildReportCard('Số ngày đi muộn > ${report.soPhutDuocDiMuon}\'', report.soNgayDiMuonBiTru.toString(),Colors.orange),
 
           PieChartWidget(report.bieuDoTronNgayLam,tieuDeBD: 'Biểu đồ thời gian làm',showTitle: false,),
           SizedBox(height: 10),
           PieChartWidget(report.bieuDoTronDiMuon,tieuDeBD: 'Biểu đồ đi muộn',showTitle: false,),
           SizedBox(height: 10),
-
+          LineChartWidget(report.bieuDoDuongCheckIn, data2: report.bieuDoDuongCheckOut, tieuDe: 'Biểu đồ thời gian điểm danh',)
         ],
       ),
     );
