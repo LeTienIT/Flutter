@@ -3,22 +3,31 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:focus_punch_in/models/work_session.dart';
+import 'package:focus_punch_in/viewmodels/time_sheet_vm.dart';
 
 import '../services/SharedPrefService.dart';
 
 class Report_vm extends ChangeNotifier{
   int month;
+  bool isLoad = false;
   final int year;
-  final List<WorkSession> sourceList;
-
+  late TimeSheetVM? vm;
+  late List<WorkSession> sourceList;
+  ///tổng ngày công trong tháng
   int totalWorkingDays = 0;
+  ///số ngày làm việc còn lại trong tháng
   int remainingWorkingDays = 0;
+  ///số ngày nghỉ làm
   int absentDays = 0;
+  ///số ngày không điểm danh khi về
   int missingCheckoutDays = 0;
+  ///tổng số công hiện tại
   double totalWorkPoints = 0;
-
+  ///số ngày đi muộn
   int soNgayDiMuon = 0;
+  ///số ngày về sớm
   int soNgayVeSom = 0;
+  ///số ngày đi muộn không quá số phút quy định
   int soNgayDiMuonKhongQuaPhut = 0;
 
   late int gioVao;
@@ -40,7 +49,8 @@ class Report_vm extends ChangeNotifier{
   List<FlSpot> bieuDoDuongCheckIn = [];
   List<FlSpot> bieuDoDuongCheckOut = [];
 
-  Report_vm(this.month, this.year, this.sourceList){
+  Report_vm(this.month, this.year, this.vm){
+
     gioVao = SharedPrefService.instance.getValue<int>('gioVao') ?? 8;
     phutVao = SharedPrefService.instance.getValue<int>('phutVao') ?? 30;
     gioRa = SharedPrefService.instance.getValue<int>('gioRa') ?? 17;
@@ -49,27 +59,25 @@ class Report_vm extends ChangeNotifier{
     soNgayDuocDiMuon = SharedPrefService.instance.getValue<int>('soNgayDenMuon') ?? 3;
     soPhutDuocDiMuon = SharedPrefService.instance.getValue<int>('soPhutDenMuon') ?? 15;
     soPhepTrongThang = SharedPrefService.instance.getValue<int>('soNgayPhepThang') ?? 1;
+    if(vm != null ){
+      _calculate();
+    }
 
-    _calculate();
   }
 
   void _calculate(){
-    ///tổng ngày công trong tháng
+    if(vm == null ){
+      return;
+    }
+    sourceList = vm!.list;
     totalWorkingDays = 0;
-    ///số ngày làm việc còn lại trong tháng
     remainingWorkingDays = 0;
-    ///số ngày không thực hiện điểm danh khi về
     missingCheckoutDays = 0;
-    ///số ngày nghỉ làm
     absentDays = 0;
-    ///tổng số công hiện tại
     totalWorkPoints = 0;
 
-    ///số ngày đi muộn
     soNgayDiMuon = 0;
-    ///số ngày về sớm
     soNgayVeSom = 0;
-    ///số ngày đi muộn không quá số phút quy định
     soNgayDiMuonKhongQuaPhut = 0;
     bieuDoTronNgayLam.clear();bieuDoTronDiMuon.clear();bieuDoDuongCheckIn.clear();bieuDoDuongCheckOut.clear();
 
@@ -144,7 +152,14 @@ class Report_vm extends ChangeNotifier{
     bieuDoTronDiMuon['Đi muộn > $soPhutDuocDiMuon\''] = soNgayDiMuonBiTru;
     bieuDoTronDiMuon['Đi muộn < $soPhutDuocDiMuon\''] = soNgayDiMuonHopLe;
 
+    isLoad = true;
     notifyListeners();
+  }
+
+  void updateSourceList(TimeSheetVM newList) {
+    if (newList==null) return;
+    vm = newList;
+    _calculate();
   }
 
   bool isSameDate(DateTime a, DateTime b) {

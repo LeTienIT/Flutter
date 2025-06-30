@@ -6,6 +6,9 @@ import 'package:focus_punch_in/services/SharedPrefService.dart';
 import 'dart:io';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 
 class NotificationUtil {
   static final FlutterLocalNotificationsPlugin _notifiPlugin =
@@ -38,7 +41,7 @@ class NotificationUtil {
         },
       );
       if (Platform.isAndroid) {
-        await _requestAndroidPermissions();
+        await requestNotificationPermission();
       }
       _isInit = true;
     } catch (e) {
@@ -46,18 +49,26 @@ class NotificationUtil {
     }
   }
 
-  Future<void> _requestAndroidPermissions() async {
-    try {
-      final androidPlugin = _notifiPlugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
-      if (androidPlugin != null) {
-        await androidPlugin.requestNotificationsPermission();
+  Future<bool> requestNotificationPermission() async {
+    final status = await Permission.notification.status;
+    if (!status.isGranted) {
+      final result = await Permission.notification.request();
+      if (!result.isGranted) {
+        debugPrint('Người dùng không cấp quyền thông báo');
+        return false;
       }
-    } catch (e) {
-      debugPrint('Error requesting permissions: $e');
+      return true;
     }
+    return true;
   }
 
+  Future<void> openExactAlarmPermissionSettings() async {
+    final intent = AndroidIntent(
+      action: 'android.settings.REQUEST_SCHEDULE_EXACT_ALARM',
+      flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+    );
+    await intent.launch();
+  }
   Future<void> _createNotificationChannel() async {
     if (_isChannelCreated) return;
     try {

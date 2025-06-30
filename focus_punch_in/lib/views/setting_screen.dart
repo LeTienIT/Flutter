@@ -8,6 +8,8 @@ import 'package:focus_punch_in/widget/numberForm.dart';
 import 'package:focus_punch_in/widget/sessionTitle.dart';
 import 'package:provider/provider.dart';
 
+import '../services/alarm_permission_helper.dart';
+
 class SettingScreen extends StatefulWidget{
   const SettingScreen({super.key});
   @override
@@ -148,6 +150,10 @@ class _SettingScreen extends State<SettingScreen>{
                             await NotificationUtil().registerNotificationCustomize(
                                 h_in: time_checkIn.hour, m_in: time_checkIn.minute, h_o: time_checkOut.hour, m_o: time_checkOut.minute
                             );
+                            final role = await NotificationUtil().requestNotificationPermission();
+                            if(role){
+                              await AlarmPermissionHelper.checkAndHandleAlarmPermission(context);
+                            }
                             setState(() {
                               _isRegistering = false;
                             });

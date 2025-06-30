@@ -1,37 +1,37 @@
-
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:focus_punch_in/viewmodels/time_sheet_vm.dart';
 import 'package:focus_punch_in/widget/lineChart.dart';
 import 'package:provider/provider.dart';
-
 import '../viewmodels/report_vm.dart';
+import '../widget/alarmPermissionHandler.dart';
 import '../widget/pieChart.dart';
 
 class ReportScreen extends StatelessWidget{
-
   const ReportScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     final timeSheet = context.watch<TimeSheetVM>();
     final sourceList = timeSheet.list;
-
     if (timeSheet.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return ChangeNotifierProvider(
-      create: (_) => Report_vm(
-        DateTime.now().month,
-        DateTime.now().year,
-        sourceList,
+    return ChangeNotifierProxyProvider<TimeSheetVM, Report_vm>(
+      create: (_) => Report_vm(DateTime.now().month, DateTime.now().year, null),
+      update: (_, timeSheetVM, previous) {
+        previous!.updateSourceList(timeSheetVM);
+        return previous!;
+      },
+      child: Stack(
+        children: const [
+          ReportContent(),
+          AlarmPermissionHandler(), // xử lý permission sau build
+        ],
       ),
-      child: ReportContent(),
     );
+
   }
 }
 
@@ -41,6 +41,10 @@ class ReportContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reportVM = context.watch<Report_vm>();
+
+    if(!reportVM.isLoad){
+      return Center(child: CircularProgressIndicator());
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -173,6 +177,7 @@ class ReportContent extends StatelessWidget {
       ),
     );
   }
+
   Widget buildReportCard(String label, String value, Color color){
     return Card(
       elevation: 4,
@@ -186,4 +191,5 @@ class ReportContent extends StatelessWidget {
       ),
     );
   }
+
 }
