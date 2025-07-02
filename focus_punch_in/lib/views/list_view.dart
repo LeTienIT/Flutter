@@ -166,51 +166,54 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
 
   void _showDialog(BuildContext context, WorkSession w, TimeSheetVM vm){
     var timeCheckIn = parseTimeFromString(w.getCheckIn);
-    var timeCheckOut = TimeOfDay.now();
-    if(w.getCheckOut!='--|--')timeCheckOut = parseTimeFromString(w.getCheckOut);
-    var wID = w.id;
-    var day = w.day;
-    showDialog(
-        context: context,
-        builder: (context){
-          return StatefulBuilder(builder: (context, setState){
-            return AlertDialog(
-              title: Text('Ngày: ${w.getDay}'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(child: Text('Giờ check-in')),
-                      Text(timeCheckIn.format(context)),
-                      IconButton(
-                          onPressed: () async {
-                            var pickedTime = await showTimePicker(
-                                context: context,
-                                initialTime: timeCheckIn,
-                                initialEntryMode: TimePickerEntryMode.dial
-                            );
-                            if(pickedTime != null){
-                              setState(() {
-                                timeCheckIn = pickedTime;
-                              });
-                            }
-                          },
-                          icon: Icon(Icons.access_alarms))
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(child: Text('Giờ check-out')),
-                      Text(w.getCheckOut=='--|--' ? w.getCheckOut : timeCheckOut.format(context)),
-                      IconButton(
-                          onPressed: () async {
-                            if(w.getCheckOut != '--|--'){
+    TimeOfDay? timeCheckOut;
+    if(w.getCheckOut!='--|--') {
+      timeCheckOut = parseTimeFromString(w.getCheckOut);
+    }
+      var wID = w.id;
+      var day = w.day;
+      showDialog(
+          context: context,
+          builder: (context){
+            return StatefulBuilder(builder: (context, setState){
+              return AlertDialog(
+                title: Text('Ngày: ${w.getDay}'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(child: Text('Giờ check-in')),
+                        Text(timeCheckIn.format(context)),
+                        IconButton(
+                            onPressed: () async {
                               var pickedTime = await showTimePicker(
                                   context: context,
-                                  initialTime: timeCheckOut,
+                                  initialTime: timeCheckIn,
+                                  initialEntryMode: TimePickerEntryMode.dial
+                              );
+                              if(pickedTime != null){
+                                setState(() {
+                                  timeCheckIn = pickedTime;
+                                });
+                              }
+                            },
+                            icon: Icon(Icons.access_alarms))
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(child: Text('Giờ check-out')),
+                        Text(
+                            timeCheckOut!=null ? timeCheckOut!.format(context) : w.getCheckOut
+                        ),
+                        IconButton(
+                            onPressed: () async {
+                              var pickedTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: timeCheckOut ?? TimeOfDay.now(),
                                   initialEntryMode: TimePickerEntryMode.dial
                               );
                               if(pickedTime != null){
@@ -218,12 +221,11 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                                   timeCheckOut = pickedTime;
                                 });
                               }
-                            }
-                          },
-                          icon: Icon(Icons.access_alarms))
-                    ],
-                  ),
-                  FilledButton(
+                            },
+                            icon: Icon(Icons.access_alarms))
+                      ],
+                    ),
+                    FilledButton(
                       onPressed: () async {
                         final confirm = await showDialog<bool>(
                           context: context,
@@ -246,8 +248,8 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
 
                         if (confirm == true) {
                           w.checkIn = DateTime(day.year, day.month, day.day, timeCheckIn.hour, timeCheckIn.minute);
-                          if(w.getCheckOut != '--|--') {
-                            w.checkOut = DateTime(day.year, day.month, day.day, timeCheckOut.hour, timeCheckOut.minute);
+                          if(timeCheckOut!=null) {
+                            w.checkOut = DateTime(day.year, day.month, day.day, timeCheckOut!.hour, timeCheckOut!.minute);
                           }
                           await vm.update(w, wID!);
 
@@ -256,14 +258,13 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                           );
                         }
                       },
-                    child: Text('Cập nhật'),
-                  )
-                ],
-              ),
-            );
-          });
-        }
-    );
+                      child: Text('Cập nhật'),
+                    )
+                  ],
+                ),
+              );
+            });
+          }
+      );
+    }
   }
-
-}

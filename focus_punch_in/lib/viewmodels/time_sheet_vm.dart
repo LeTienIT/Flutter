@@ -9,7 +9,7 @@ class TimeSheetVM extends ChangeNotifier{
   // STATE
   final List<WorkSession> _list = [];
   List<WorkSession> listView = [];
-  bool get hasOpen => today && _list.isNotEmpty && _list.last.checkOut == null;
+  bool get hasOpen => today && _list.isNotEmpty && _list.first.checkOut == null;
 
   // Kiểm tra hôm nay đã có bản ghi chưa? Nếu có => true
   bool get today {
@@ -56,9 +56,9 @@ class TimeSheetVM extends ChangeNotifier{
 
   Future<void> punchOut() async{
     if(!hasOpen) return;
-    final w = _list.last..checkOut = DateTime.now();
+    final w = _list.first..checkOut = DateTime.now();
     await _db.update(w, w.id!);
-    listView.last.checkOut = DateTime.now();
+    listView.first.checkOut = DateTime.now();
     notifyListeners();
   }
 
