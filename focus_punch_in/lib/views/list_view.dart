@@ -83,8 +83,6 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                 itemBuilder: (context, index) {
                   final item = vm.list[index];
                   final bool isSpecialItem = item.getCheckOut == '--|--';
-                  final Color cardColor = isSpecialItem ? Theme.of(context).colorScheme.errorContainer:Theme.of(context).cardColor;
-                  final Color textColor = isSpecialItem ? Theme.of(context).colorScheme.onErrorContainer:Theme.of(context).colorScheme.onSurface;
                   return InkWell(
                     onTap: (){
                       _showDialog(context, item, vm);
@@ -98,6 +96,25 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Icon(Icons.delete),
                       ),
+                      confirmDismiss: (direction) async {
+                        return await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Xác nhận xoá'),
+                              content: Text('Bạn đang thực hiện thao tác xóa 1 dữ liệu.\n\nXác nhận xóa bản ghi này?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: Text('Huỷ'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: Text('Xoá', style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                       onDismissed: (direction) {
                         vm.delete(item.id!);
                       },
