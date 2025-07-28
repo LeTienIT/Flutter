@@ -151,6 +151,10 @@ class _TimeSheetScreen extends State<TimeSheetScreen>{
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: (){Navigator.pushNamed(context, '/add');},
+          child: Icon(Icons.add_box),
+      ),
     );
   }
 

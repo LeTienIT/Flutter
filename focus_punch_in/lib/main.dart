@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:focus_punch_in/core/utils/notification_utils.dart';
 import 'package:focus_punch_in/viewmodels/theme_vm.dart';
 import 'package:focus_punch_in/viewmodels/time_sheet_vm.dart';
+import 'package:focus_punch_in/views/add_screen.dart';
 import 'package:focus_punch_in/views/check_io_screen.dart';
 import 'package:focus_punch_in/views/list_view.dart';
 import 'package:focus_punch_in/views/report_screen.dart';
@@ -52,7 +53,8 @@ class MyApp extends StatelessWidget {
         '/list': (context) => TimeSheetScreen(),
         '/checkIn': (context) => CheckIOScreen(),
         '/setting': (context) => SettingScreen(),
-        '/report' : (context) => ReportScreen()
+        '/report' : (context) => ReportScreen(),
+        '/add': (context) => AddScreen(),
       },
       home: ReportScreen(),
     );

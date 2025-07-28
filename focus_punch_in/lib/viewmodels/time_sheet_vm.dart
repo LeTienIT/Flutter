@@ -91,4 +91,9 @@ class TimeSheetVM extends ChangeNotifier{
     }
     notifyListeners();
   }
+
+  Future<void> insert(WorkSession w) async{
+    await _db.insert(w);
+    loadData();
+  }
 }
